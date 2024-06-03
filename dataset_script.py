@@ -48,6 +48,8 @@ def make_training_set() -> tuple[np.array]:
     y_med_c13 = np.zeros(num_trials, dtype=np.int64)
     y_med_c23 = np.zeros(num_trials, dtype=np.int64)
 
+    y_hard = np.zeros(num_trials, dtype=np.int64)
+
     trial_idx = 0
     for condition in conditions:
         c1, c2, c3 = condition
@@ -67,9 +69,11 @@ def make_training_set() -> tuple[np.array]:
             y_med_c13[trial_idx] = c1 ^ c3
             y_med_c23[trial_idx] = c2 ^ c3
 
+            y_hard[trial_idx] = 0 if (c1 + c2 + c3) % 2 == 0 else 1
+
             trial_idx += 1
 
-    return X, y_easy_c1, y_easy_c2, y_easy_c3, y_med_c12, y_med_c13, y_med_c23
+    return X, y_easy_c1, y_easy_c2, y_easy_c3, y_med_c12, y_med_c13, y_med_c23, y_hard
 
 
 
@@ -225,7 +229,7 @@ def make_hard_test_set() -> tuple[np.array]:
                 X_test_hard[trial_idx][step][1] = 0 if delay2 >= step else bernoulli.rvs(c2)
                 X_test_hard[trial_idx][step][2] = 0 if delay3 >= step else bernoulli.rvs(c3)
 
-            y_test_hard[trial_idx] = 0 if cond1 + cond2 + cond3 == 0 or cond1 + cond2 + cond3 == 2 else 1
+            y_test_hard[trial_idx] = 0 if (c1 + c2 + c3) % 2 == 0 else 1
 
 
             trial_idx += 1
